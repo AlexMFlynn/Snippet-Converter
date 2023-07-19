@@ -32,17 +32,15 @@ const convert = () => {
           const content = data.match(/<content><!\[CDATA\[(.*?)]]><\/content>/s)?.[1]
           .split(/\r?\n/)
           .filter((line) => line.trim() !== "")
-          .map((line) => `\n"${line
-            .replace(/\t+/g, '')
-            .replace(/\\/g, '\\\\')
-            .replace(/"/g, '\\"')
-          }"`) ?? [];  
-          //const scope = data.match(/<scope>(.*?)<\/scope>/)?.[1] ?? '';
+            .map((line) => `\n\t\t\t"${line
+              .replace(/([\\"])/g, '\\$1')
+              .replace(/\t/g, '\\t')
+              }"`) ?? [];  
           const scope: string = '';
           const description = data.match(/<description>(.*?)<\/description>/)?.[1].split(/\r?\n/) ?? '';
         
           // Make conversion
-          const convertedSnippet: string = `{\n\t"${name}": {\n\t\t"prefix": "${trigger}",\n\t\t"body": [${content}\n],\n\t\t"scope": "${scope}",\n\t\t"description": "${description}"\n\t}\n}`
+          const convertedSnippet: string = `{\n\t"${name}": {\n\t\t"prefix": "${trigger}",\n\t\t"body": [${content}\n\t\t],\n\t\t"scope": "${scope}",\n\t\t"description": "${description}"\n\t}\n}`
   
           const outputPath = path.join(outputDirectory, `/${name}.code-snippets`);`${outputDirectory}/${name}`;
   
@@ -52,7 +50,7 @@ const convert = () => {
               console.error(error);
               return;
             }
-            console.log('Snippet was succefully converted');
+            console.log(`snippet ${name} was succefully converted`);
           });
         });
       }
